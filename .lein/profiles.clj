@@ -1,4 +1,4 @@
-{:repl {:plugins [[cider/cider-nrepl "0.25.9"]
-                  [refactor-nrepl "2.5.1"]]
+{:repl {:plugins [[cider/cider-nrepl "0.27.4"]
+                  [refactor-nrepl "3.3.2"]]
         :dependencies [[alembic "0.3.2"]
-                       [org.clojure/tools.nrepl "0.2.13"]]}}
+                       [nrepl "0.9.0"]]}}

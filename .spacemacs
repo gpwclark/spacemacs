@@ -1,3 +1,4 @@
+(setq-default evil-want-keybinding nil)
 ;; -*- mode: emacs-lisp -*-
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
@@ -26,13 +27,15 @@ values."
      ;; ----------------------------------------------------------------
      ;; auto-completion
      ;; better-defaults
-	 elixir
-     clojure
+     elixir
+     (clojure :variables
+              clojure-enable-linters 'clj-kondo)
      emacs-lisp
      git
      markdown
+     neotree
      ;; org
-      (shell :variables
+     (shell :variables
              shell-default-term-shell "/usr/bin/zsh"
              shell-default-height 30
              shell-default-position 'bottom)
@@ -258,9 +261,7 @@ you should place your code here."
   (setq-default tab-width 4)
   (setq-default indent-tabs-mode t)
   (setq-default electric-indent-inhibit t)
-  (setq-default evil-shift-width 4)
-  (add-hook 'clojure-mode-hook 'turn-on-surround-mode)
-  )
+  (setq-default evil-shift-width 4))
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
