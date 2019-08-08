@@ -37,19 +37,22 @@
     (second (re-matches #"git version (.+)"
                         (sh-str "git" "--version")))))
 
-(defn destructure-semantic-version [s]
-  (mapv #(Long/parseLong %) (clojure.string/split s #"\.")))
+(comment
+	(defn destructure-semantic-version [s]
+	  (mapv #(Long/parseLong %) (clojure.string/split s #"\.")))
 
-(defn compare-semantic-versions [a b]
-  (loop [[head-a & left-a] (destructure-semantic-version a)
-         [head-b & left-b] ( destructure-semantic-version b)]
-    (let [comparison (compare head-a head-b)]
-      (if (and head-a head-b
-              (zero? comparison))
-        (recur left-a left-b)
-        comparison))))
+	(defn compare-semantic-versions [a b]
+	  (loop [[head-a & left-a] (destructure-semantic-version a)
+			 [head-b & left-b] ( destructure-semantic-version b)]
+		(let [comparison (compare head-a head-b)]
+		  (if (and head-a head-b
+				  (zero? comparison))
+			(recur left-a left-b)
+			comparison))))
+)
 
-(def POST_1_7_2_GIT? (<= 0 (compare-semantic-versions (git-version) "1.7.2")))
+;;(def POST_1_7_2_GIT? (<= 0 (compare-semantic-versions (git-version) "1.7.2")))
+(def POST_1_7_2_GIT? true)
 
 (def DISABLE_UNTRACKED_FILES_DIRTY? false)
 
@@ -82,10 +85,11 @@
                        (remove
                         nil?
                         [
-                         (color/bold (color/blue (current-hostname)))
-                         (color/bold (color/blue "::"))
-                         (color/bold (color/magenta (current-dir)))
-						 (color/bold (color/red "☭ "))
+                         (color/bold (color/red (current-hostname)))
+                         (color/bold (color/yellow ":"))
+                         (color/bold (color/red ":"))
+                         (color/bold (color/yellow (current-dir)))
+						 (color/bold (color/red "⚒ "))
                          (when-let [b (git-current-branch)]
                            (str (color/bold (color/blue "git:("))
                                 (color/bold (color/red b))
@@ -109,3 +113,35 @@
 
     (clojure.core.server/start-server {:port 49999 :name "closh-server" :accept 'clojure.core.server/repl}))
 
+(println "   ___       ___            ___       ___       ___       ___       ___       ___   ")
+(println "  /\\__\\     /\\  \\          /\\__\\     /\\  \\     /\\  \\     /\\  \\     /\\  \\     /\\  \\  ")
+(println " /:| _|_   /::\\  \\        /::L_L_   /::\\  \\    \\:\\  \\    \\:\\  \\   /::\\  \\   /::\\  \\ ")
+(println "/::|/\\__\\ /:/\\:\\__\\      /:/L:\\__\\ /::\\:\\__\\   /::\\__\\   /::\\__\\ /::\\:\\__\\ /::\\:\\__\\")
+(println "\\/|::/  / \\:\\/:/  /      \\/_/:/  / \\/\\::/  /  /:/\\/__/  /:/\\/__/ \\:\\:\\/  / \\;:::/  /")
+(println "  |:/  /   \\::/  /         /:/  /    /:/  /   \\/__/     \\/__/     \\:\\/  /   |:\\/__/ ")
+(println "  \\/__/     \\/__/          \\/__/     \\/__/                         \\/__/     \\|__|  ")
+(println "   ___       ___       ___       ___       ___            ___       ___       ___   ")
+(println "  /\\__\\     /\\__\\     /\\  \\     /\\  \\     /\\  \\          /\\__\\     /\\  \\     /\\__\\  ")
+(println " /:/\\__\\   /:/__/_   /::\\  \\   /::\\  \\   /::\\  \\        |::L__L   /::\\  \\   /:/ _/_ ")
+(println "/:/:/\\__\\ /::\\/\\__\\ /::\\:\\__\\ /::\\:\\__\\ /::\\:\\__\\       |:::\\__\\ /:/\\:\\__\\ /:/_/\\__\\")
+(println "\\::/:/  / \\/\\::/  / \\:\\:\\/  / \\;:::/  / \\:\\:\\/  /       /:;;/__/ \\:\\/:/  / \\:\\/:/  /")
+(println " \\::/  /    /:/  /   \\:\\/  /   |:\\/__/   \\:\\/  /        \\/__/     \\::/  /   \\::/  / ")
+(println "  \\/__/     \\/__/     \\/__/     \\|__|     \\/__/                    \\/__/     \\/__/  ")
+(println "   ___       ___         ___       ___       ___       ___       ___                  ")
+(println "  /\\  \\     /\\  \\       /\\  \\     /\\__\\     /\\  \\     /\\  \\     /\\  \\                 ")
+(println " /::\\  \\   /::\\  \\      \\:\\  \\   /:/__/_   /::\\  \\   /::\\  \\   /::\\  \\                ")
+(println "/:/\\:\\__\\ /:/\\:\\__\\     /::\\__\\ /::\\/\\__\\ /::\\:\\__\\ /::\\:\\__\\ /::\\:\\__\\               ")
+(println "\\:\\:\\/__/ \\:\\/:/  /    /:/\\/__/ \\/\\::/  / \\:\\:\\/  / \\;:::/  / \\:\\:\\/  /               ")
+(println " \\::/  /   \\::/  /     \\/__/      /:/  /   \\:\\/  /   |:\\/__/   \\:\\/  /                ")
+(println "  \\/__/     \\/__/                 \\/__/     \\/__/     \\|__|     \\/__/                 ")
+(println "   ___       ___       ___            ___       ___       ___                       ")
+(println "  /\\__\\     /\\  \\     /\\__\\          /\\  \\     /\\  \\     /\\  \\                      ")
+(println " |::L__L   /::\\  \\   /:/ _/_        /::\\  \\   /::\\  \\   /::\\  \\                     ")
+(println " |:::\\__\\ /:/\\:\\__\\ /:/_/\\__\\      /::\\:\\__\\ /::\\:\\__\\ /::\\:\\__\\                    ")
+(println " /:;;/__/ \\:\\/:/  / \\:\\/:/  /      \\/\\::/  / \\;:::/  / \\:\\:\\/  /                    ")
+(println " \\/__/     \\::/  /   \\::/  /         /:/  /   |:\\/__/   \\:\\/  /                     ")
+(println "            \\/__/     \\/__/          \\/__/     \\|__|     \\/__/                       ")
+(println "")
+
+
+;; ALIASES
