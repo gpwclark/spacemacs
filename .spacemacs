@@ -27,7 +27,6 @@ values."
      ;; auto-completion
      ;; better-defaults
 	 elixir
-	 lfe
      clojure
      emacs-lisp
      git
@@ -39,7 +38,6 @@ values."
              shell-default-position 'bottom)
      ;; spell-checking
      syntax-checking
-     eyebrowse
      ;; version-control
      )
    ;; List of additional packages that will be installed without being
@@ -257,6 +255,10 @@ explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   (setq clojure-enable-fancify-symbols t)
   (setq-default evil-escape-key-sequence "jk")
+  (setq-default tab-width 4)
+  (setq-default indent-tabs-mode t)
+  (setq-default electric-indent-inhibit t)
+  (setq-default evil-shift-width 4)
   (add-hook 'clojure-mode-hook 'turn-on-surround-mode)
   )
 
