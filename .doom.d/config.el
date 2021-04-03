@@ -22,12 +22,10 @@
 ;; (setq doom-font (font-spec :family "monospace" :size 12 :weight 'semi-light)
 ;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
 
-(setq doom-font "Hack-18")
-
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-solarized-dark)
+;;(setq doom-theme 'doom-solarized-dark)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -55,5 +53,16 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
+;; editor stuff
 (setq evil-escape-key-sequence "jk")
 (global-whitespace-mode +1)
+
+;; graphgiz mode
+(use-package graphviz-dot-mode
+	:ensure t
+	:config
+	(setq graphviz-dot-indent-width 4))
+(use-package company-graphviz-dot)
+
+;; start rainbow parens
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
