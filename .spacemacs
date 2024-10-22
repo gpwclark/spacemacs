@@ -1,3 +1,8 @@
+;; hacks
+;;; FILES
+;;;    SPC f t toggles file tree
+;;;    SPC p f (projectile find) to quickly find and open files in a project.
+;;;    SPC s p to search in the project
 (setq-default evil-want-keybinding nil)
 ;; -*- mode: emacs-lisp -*-
 ;; This file is loaded by Spacemacs at startup.
@@ -18,42 +23,52 @@ values."
    ;; List of configuration layers to load. If it is the symbol `all' instead
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
-   '(
-     erlang
-     ;; ----------------------------------------------------------------
+   '(evil-escape
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     ;; auto-completion
-     ;; better-defaults
-     elixir
-     (clojure :variables
-              clojure-enable-linters 'clj-kondo)
-     emacs-lisp
+     auto-completion
+     better-defaults
+     helm
      git
      markdown
      neotree
-     ;; org
+     magit
+     ;; ----------------------------------------------------------------
+     ;; lang specific
+     ;; ----------------------------------------------------------------
+     erlang
+     elixir
      (shell :variables
-             shell-default-term-shell "/usr/bin/zsh"
-             shell-default-height 30
-             shell-default-position 'bottom)
-     ;; spell-checking
+            shell-default-term-shell "/home/price/development/sl-sh-dev/slosh/target/release/slosh"
+            shell-default-height 30
+            shell-default-position 'bottom)
+     spell-checking
      syntax-checking
-     ;; version-control
-     )
-   ;; List of additional packages that will be installed without being
-   ;; wrapped in a layer. If you need some configuration for these
-   ;; packages, then consider creating a layer. You can also put the
-   ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(editorconfig)
-   ;; A list of packages and/or extensions that will not be install and loaded.
-   dotspacemacs-excluded-packages '()
-   ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
-   ;; are declared in a layer which is not a member of
-   ;; the list `dotspacemacs-configuration-layers'. (default t)
-   dotspacemacs-delete-orphan-packages t))
+     lsp
+     (clojure :variables
+              clojure-enable-linters 'clj-kondo)
+     emacs-lisp
+     (rust :variables
+           lsp-rust-analyzer-cargo-auto-reload t
+           rustic-format-on-save t)
+     (org :variables
+          org-todo-dependencies-strategy 'naive-auto
+          org-enable-hugo-support t
+          org-projectile-file "TODOs.org")
+     ;; List of additional packages that will be installed without being
+     ;; wrapped in a layer. If you need some configuration for these
+     ;; packages, then consider creating a layer. You can also put the
+     ;; configuration in `dotspacemacs/user-config'.
+
+     dotspacemacs-additional-packages '(editorconfig)
+     ;; A list of packages and/or extensions that will not be install and loaded.
+     dotspacemacs-excluded-packages '()
+     ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
+     ;; are declared in a layer which is not a member of
+     ;; the list `dotspacemacs-configuration-layers'. (default t)
+     dotspacemacs-delete-orphan-packages t)))
 
 (defun dotspacemacs/init ()
   "Initialization function.
@@ -93,7 +108,7 @@ values."
    ;; List of items to show in the startup buffer. If nil it is disabled.
    ;; Possible values are: `recents' `bookmarks' `projects'.
    ;; (default '(recents projects))
-   dotspacemacs-startup-lists '(recents projects)
+   dotspacemacs-startup-lists  '((recents . 5) (projects . 7))
    ;; Number of recent files to show in the startup buffer. Ignored if
    ;; `dotspacemacs-startup-lists' doesn't include `recents'. (default 5)
    dotspacemacs-startup-recent-list-size 5
@@ -113,8 +128,8 @@ values."
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
-   dotspacemacs-default-font '("Source Code Pro"
-                               :size 13
+   dotspacemacs-default-font '("IBM Plex Mono"
+                               :size 18
                                :weight normal
                                :width normal
                                :powerline-scale 1.1)
@@ -263,6 +278,15 @@ you should place your code here."
   (setq-default electric-indent-inhibit t)
   (setq-default evil-shift-width 4))
 
+(setq-default dotspacemacs-install-packages 'used-only)
+;;(setq-default dotspacemacs-install-packages '())
+
+;;(with-eval-after-load 'org
+;;  :variables
+;;  org-todo-dependencies-strategy 'naive-auto
+;;  org-enable-hugo-support t
+;;  org-projectile-file "TODOs.org")
+
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
 (custom-set-variables
@@ -279,3 +303,22 @@ you should place your code here."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(defun dotspacemacs/emacs-custom-settings ()
+  "Emacs custom settings.
+This is an auto-generated function, do not modify its content directly, use
+Emacs customize menu instead.
+This function is called at the very end of Spacemacs initialization."
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(ox-hugo tomelr editorconfig erlang ob-elixir flycheck-mix flycheck-credo alchemist company elixir-mode winum uuidgen toc-org powerline org-plus-contrib org-bullets markdown-mode link-hint parent-mode projectile request gitignore-mode git-link pos-tip flycheck flx evil-visual-mark-mode evil-unimpaired magit magit-popup git-commit ghub with-editor smartparens iedit evil-ediff anzu evil goto-chg undo-tree eshell-z dumb-jump f dash diminish column-enforce-mode hydra inflections edn multiple-cursors paredit yasnippet s peg eval-sexp-fu highlight cider spinner queue pkg-info clojure-mode epl bind-map bind-key packed helm avy helm-core popup async xterm-color shell-pop multi-term eshell-prompt-extras esh-help ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe use-package spacemacs-theme spaceline smooth-scrolling smeargle restart-emacs rainbow-delimiters quelpa popwin persp-mode pcre2el paradox page-break-lines orgit open-junk-file neotree move-text mmm-mode markdown-toc magit-gitflow macrostep lorem-ipsum linum-relative leuven-theme info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-ag google-translate golden-ratio gitconfig-mode gitattributes-mode git-timemachine git-messenger gh-md flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-args evil-anzu elisp-slime-nav define-word clj-refactor clean-aindent-mode cider-eval-sexp-fu buffer-move bracketed-paste auto-highlight-symbol auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+)
