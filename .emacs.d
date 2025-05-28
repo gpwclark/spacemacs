@@ -1,1 +1,0 @@
-/home/price/development/spacemacs
