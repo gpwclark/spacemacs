@@ -1,4 +1,18 @@
-;; -*- mode: emacs-lisp; lexical-binding: t -*-
+;; hacks
+;;; FILES
+;;     SPC f t toggles file tree
+;;;    SPC p f (projectile find) to quickly find and open files in a project.
+;;;    SPC s p to search in the project
+;;; TERM shell layer docs: https://develop.spacemacs.org/layers/+tools/shell/README.html
+;;;    SPC ' open terminal
+;;; LAYOUT / windowing: https://develop.spacemacs.org/layers/+spacemacs/spacemacs-layouts/README.html
+;;;    `SPC l #' to swtich to different numbered workspaces
+;;;    `'SPC l ?`' to show help (uses eyebrowse/spacemacs-layouts)
+(setq-default evil-want-keybinding nil)
+
+
+;; -*- mode: emacs-lisp -*-
+
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
 
@@ -33,59 +47,75 @@ This function should only modify configuration layer settings."
    ;; Paths must have a trailing slash (i.e. "~/.mycontribs/")
    dotspacemacs-configuration-layer-path '()
 
-   ;; HOW spacemacs actually does leader config: https://github.com/justbur/emacs-bind-map
-   ;;
-   ;; List of configuration layers to load.
+   ;; List of configuration layers to load. If it is the symbol `all' instead
+   ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(rust
-     ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
-     ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
-     ;; `M-m f e R' (Emacs style) to install them.
+     ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
+     ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     ;; auto-completion
-     ;; better-defaults
-     emacs-lisp
-     ;; git
+     auto-completion
+     better-defaults
+     ;; list of debuggers: https://github.com/realgud/realgud/wiki/Debuggers-Available
+     (debug :variables debug-additional-debuggers '("gdb"))
+     (spacemacs-layouts :variables
+                        spacemacs-layouts-restrict-spc-tab t)
      helm
-     lsp
+     git
      markdown
-     multiple-cursors
-     org
-     (shell :variables
-            shell-default-shell 'vterm
-            shell-default-height 30
-            shell-default-position 'bottom)
-     spell-checking
-     syntax-checking
-     ;; version-control
-     treemacs)
+     neotree
+     (claude-code :variables
+                  claude-code-ide-window-side 'right
+                  claude-code-ide-window-width 100))
+   ;; ----------------------------------------------------------------
+   ;; lang specific
+   ;; ----------------------------------------------------------------
+   erlang
+   elixir
+   (shell :variables
+          shell-default-shell 'eshell
+          ;;shell-default-term-shell "/bin/zsh"
+          ;;shell-default-term-shell "~/development/sl-sh-dev/slosh/target/release/slosh"
+          shell-default-height 25
+          shell-default-position 'bottom)
+   spell-checking
+   syntax-checking
+   lsp
+   (clojure :variables
+            clojure-enable-linters 'clj-kondo)
+   emacs-lisp
+   (rust :variables
+         lsp-rust-analyzer-cargo-auto-reload t
+         (add-to-list 'lsp-file-watch-ignored-directories "target")
+         rustic-format-on-save t)
+   ;;(org :variables
+   ;;   org-todo-dependencies-strategy 'naive-auto
+   ;;   org-enable-hugo-support t
+   ;;   org-projectile-file "TODOs.org")
+   )
+  ;; List of additional packages that will be installed without being
+  ;; wrapped in a layer. If you need some configuration for these
+  ;; packages, then consider creating a layer. You can also put the
+  ;; configuration in `dotspacemacs/user-config'.
 
+   ;; HOW spacemacs actually does leader config: https://github.com/justbur/emacs-bind-map
+  dotspacemacs-additional-packages '(editorconfig)
 
-   ;; List of additional packages that will be installed without being wrapped
-   ;; in a layer (generally the packages are installed only and should still be
-   ;; loaded using load/require/use-package in the user-config section below in
-   ;; this file). If you need some configuration for these packages, then
-   ;; consider creating a layer. You can also put the configuration in
-   ;; `dotspacemacs/user-config'. To use a local version of a package, use the
-   ;; `:location' property: '(your-package :location "~/path/to/your-package/")
-   ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '()
+  ;; A list of packages that cannot be updated.
+  dotspacemacs-frozen-packages '()
 
-   ;; A list of packages that cannot be updated.
-   dotspacemacs-frozen-packages '()
+  ;; A list of packages and/or extensions that will not be install and loaded.
+  dotspacemacs-excluded-packages '()
 
-   ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '()
-
-   ;; Defines the behaviour of Spacemacs when installing packages.
-   ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
-   ;; `used-only' installs only explicitly used packages and deletes any unused
-   ;; packages as well as their unused dependencies. `used-but-keep-unused'
-   ;; installs only the used packages but won't delete unused ones. `all'
-   ;; installs *all* packages supported by Spacemacs and never uninstalls them.
-   ;; (default is `used-only')
-   dotspacemacs-install-packages 'used-only))
+  ;; Defines the behaviour of Spacemacs when installing packages.
+  ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
+  ;; `used-only' installs only explicitly used packages and deletes any unused
+  ;; packages as well as their unused dependencies. `used-but-keep-unused'
+  ;; installs only the used packages but won't delete unused ones. `all'
+  ;; installs *all* packages supported by Spacemacs and never uninstalls them.
+  ;; (default is `used-only')
+  dotspacemacs-install-packages 'used-only))
 
 (defun dotspacemacs/init ()
   "Initialization:
@@ -216,35 +246,23 @@ It should only modify the values of Spacemacs settings."
    ;; `:location' to download the theme package, refer the themes section in
    ;; DOCUMENTATION.org for the full theme specifications.
    dotspacemacs-themes '(spacemacs-dark
-                         spacemacs-light)
-
-   ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
-   ;; `all-the-icons', `custom', `doom', `vim-powerline' and `vanilla'. The
-   ;; first three are spaceline themes. `doom' is the doom-emacs mode-line.
-   ;; `vanilla' is default Emacs mode-line. `custom' is a user defined themes,
-   ;; refer to the DOCUMENTATION.org for more info on how to create your own
-   ;; spaceline theme. Value can be a symbol or list with additional properties.
-   ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
-
-   ;; If non-nil the cursor color matches the state color in GUI Emacs.
-   ;; (default t)
+                         spacemacs-light
+                         solarized-light
+                         solarized-dark
+                         leuven
+                         monokai
+                         zenburn)
+   ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
-
-   ;; Default font or prioritized list of fonts. This setting has no effect when
-   ;; running Emacs in terminal. The font set here will be used for default and
-   ;; fixed-pitch faces. The `:size' can be specified as
-   ;; a non-negative integer (pixel size), or a floating-point (point size).
-   ;; Point size is recommended, because it's device independent. (default 10.0)
-   dotspacemacs-default-font '("Fira Mono" ;; "Source Code Pro"
-                               :size 10.0
+   ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
+   ;; size to make separators look not too crappy.
+   dotspacemacs-default-font '("IBM Plex Mono"
+                               :size 18
                                :weight normal
-                               :width normal)
-
-   ;; Default icons font, it can be `all-the-icons' or `nerd-icons'.
-   dotspacemacs-default-icons-font 'all-the-icons
-
-   ;; The leader key (default "SPC")
+                               :width normal
+                               :powerline-scale 1.1)
+   ;; The leader key
+   ;; (default "SPC")
    dotspacemacs-leader-key "SPC"
 
    ;; The key used for Emacs commands `M-x' (after pressing on the leader key).
@@ -282,6 +300,14 @@ It should only modify the values of Spacemacs settings."
    ;; In the terminal, these pairs are generally indistinguishable, so this only
    ;; works in the GUI. (default nil)
    dotspacemacs-distinguish-gui-tab nil
+
+   ;; (Not implemented) dotspacemacs-distinguish-gui-ret nil
+   ;; The command key used for Evil commands (ex-commands) and
+   ;; Emacs commands (M-x).
+
+   ;; If non nil `Y' is remapped to `y$'. (default t)
+   ;;dotspacemacs-remap-Y-to-y$ t
+   vim-style-remap-Y-y$ t
 
    ;; Name of the default layout (default "Default")
    dotspacemacs-default-layout-name "Default"
@@ -471,47 +497,13 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-persistent-server nil
 
    ;; List of search tool executable names. Spacemacs uses the first installed
-   ;; tool of the list. Supported tools are `rg', `ag', `pt', `ack' and `grep'.
-   ;; (default '("rg" "ag" "pt" "ack" "grep"))
-   dotspacemacs-search-tools '("rg" "ag" "pt" "ack" "grep")
-
-   ;; The backend used for undo/redo functionality. Possible values are
-   ;; `undo-fu', `undo-redo' and `undo-tree' see also `evil-undo-system'.
-   ;; Note that saved undo history does not get transferred when changing
-   ;; your undo system. The default is currently `undo-fu' as `undo-tree'
-   ;; is not maintained anymore and `undo-redo' is very basic."
-   dotspacemacs-undo-system 'undo-fu
-
-   ;; Format specification for setting the frame title.
-   ;; %a - the `abbreviated-file-name', or `buffer-name'
-   ;; %t - `projectile-project-name'
-   ;; %I - `invocation-name'
-   ;; %S - `system-name'
-   ;; %U - contents of $USER
-   ;; %b - buffer name
-   ;; %f - visited file name
-   ;; %F - frame name
-   ;; %s - process status
-   ;; %p - percent of buffer above top of window, or Top, Bot or All
-   ;; %P - percent of buffer above bottom of window, perhaps plus Top, or Bot or All
-   ;; %m - mode name
-   ;; %n - Narrow if appropriate
-   ;; %z - mnemonics of buffer, terminal, and keyboard coding systems
-   ;; %Z - like %z, but including the end-of-line format
-   ;; If nil then Spacemacs uses default `frame-title-format' to avoid
-   ;; performance issues, instead of calculating the frame title by
-   ;; `spacemacs/title-prepare' all the time.
-   ;; (default "%I@%S")
-   dotspacemacs-frame-title-format "%I@%S"
-
-   ;; Format specification for setting the icon title format
-   ;; (default nil - same as frame-title-format)
-   dotspacemacs-icon-title-format nil
-
-   ;; Color highlight trailing whitespace in all prog-mode and text-mode derived
-   ;; modes such as c++-mode, python-mode, emacs-lisp, html-mode, rst-mode etc.
-   ;; (default t)
-   dotspacemacs-show-trailing-whitespace t
+   ;; tool of the list. Supported tools are `ag', `pt', `ack' and `grep'.
+   ;; (default '("ag" "pt" "ack" "grep"))
+   dotspacemacs-search-tools '("ag" "rg" "ack" "grep")
+   ;; The default package repository used if no explicit repository has been
+   ;; specified with an installed package.
+   ;; Not used for now. (default nil)
+   dotspacemacs-default-package-repository nil
 
    ;; Delete whitespace while saving buffer. Possible values are `all'
    ;; to aggressively delete empty line and long sequences of whitespace,
@@ -574,12 +566,108 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
   )
 
 (defun dotspacemacs/user-config ()
-  "Configuration for user code:
-This function is called at the very end of Spacemacs startup, after layer
-configuration.
-Put your configuration code here, except for variables that should be set
-before packages are loaded."
-  )
+
+  "Configuration function for user code.
+This function is called at the very end of Spacemacs initialization after
+layers configuration.
+This is the place where most of your configurations should be done. Unless it is
+explicitly specified that a variable should be set before a package is loaded,
+you should place your code here."
+  (setq clojure-enable-fancify-symbols t)
+  (setq-default evil-escape-key-sequence "jk")
+  (setq-default tab-width 4)
+  (setq-default indent-tabs-mode t)
+  (setq-default electric-indent-inhibit t)
+  (setq-default evil-shift-width 4)
+  ;; Ignore common build/cache directories
+  (setq projectile-globally-ignored-directories
+        (append '("target"
+                  "node_modules"
+                  "dot-graphs"
+                  ".git"
+                  ".svn"
+                  "out"
+                  "repl"
+                  ".gradle"
+                  ".deps"
+                  ".lsp"
+                  ".clj-kondo"
+                  "dist")
+                projectile-globally-ignored-directories))
+
+  ;; Also ignore file patterns
+  (setq projectile-globally-ignored-files
+        (append '("*.exe" "*.dll" "*.so" "*.a" "*.lib")
+                projectile-globally-ignored-files)))
+
+(setq-default dotspacemacs-install-packages 'used-only)
+;;(setq-default dotspacemacs-install-packages '())
+
+;; something something terminal configurations {{{
+(setq terminal-here-linux-terminal-command 'st)
+(setq terminal-here-mac-terminal-command 'iterm2)
+
+(setq mac-control-modifier 'control)
+(setq mac-command-modifier 'meta)
+(setq mac-right-option-modifier 'control)
+
+;; (defun config//term-normal-state ()
+;;   "Enable `term-line-mode' when in normal state in `term-mode' buffer
+;;  and make the buffer read only."
+;;   (term-line-mode)
+;;   (read-only-mode 1))
+;;
+;; (defun config//term-insert-state ()
+;;   "Enable `term-char-mode' when in insert state in a `term-mode' buffer."
+;;   (when (get-buffer-process (current-buffer))
+;;	(read-only-mode -1)
+;;	(term-char-mode)
+;;	))
+;;
+;; (defun config//term-evil-bindings ()
+;;   "Enable term support for vim and hybrid editing styles."
+;;   (add-hook 'evil-hybrid-state-entry-hook 'config//term-insert-state nil t)
+;;   (add-hook 'evil-insert-state-entry-hook 'config//term-insert-state nil t)
+;;   (add-hook 'evil-hybrid-state-exit-hook 'config//term-normal-state nil t)
+;;   (add-hook 'evil-insert-state-exit-hook 'config//term-normal-state nil t))
+;;
+;; (setq term-char-mode-point-at-process-mark t)
+;; (add-hook 'term-mode-hook 'config//term-evil-bindings)
+
+(defun vterm-evil-insert ()
+  (interactive)
+  (vterm-goto-char (point))
+  (call-interactively #'evil-insert))
+
+(defun vterm-evil-append ()
+  (interactive)
+  (vterm-goto-char (1+ (point)))
+  (call-interactively #'evil-append))
+
+(defun vterm-evil-delete ()
+  "Provide similar behavior as `evil-delete'."
+  (interactive)
+  (let ((inhibit-read-only t)
+        )
+    (cl-letf (((symbol-function #'delete-region) #'vterm-delete-region))
+      (call-interactively 'evil-delete))))
+
+(defun vterm-evil-change ()
+  "Provide similar behavior as `evil-change'."
+  (interactive)
+  (let ((inhibit-read-only t))
+    (cl-letf (((symbol-function #'delete-region) #'vterm-delete-region))
+      (call-interactively 'evil-change))))
+
+(defun my-vterm-hook()
+  (evil-local-mode 1)
+  (evil-define-key 'normal 'local "a" 'vterm-evil-append)
+  (evil-define-key 'normal 'local "d" 'vterm-evil-delete)
+  (evil-define-key 'normal 'local "i" 'vterm-evil-insert)
+  (evil-define-key 'normal 'local "c" 'vterm-evil-change))
+
+(add-hook 'vterm-mode-hook 'my-vterm-hook)
+;; }}}
 
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -595,43 +683,8 @@ This function is called at the very end of Spacemacs initialization."
    ;; Your init file should contain only one such instance.
    ;; If there is more than one, they won't work right.
    '(package-selected-packages
-     '(ace-link aggressive-indent alert all-the-icons auto-compile
-                auto-highlight-symbol auto-yasnippet avy-jump-helm-line bui
-                centered-cursor-mode clean-aindent-mode column-enforce-mode
-                company dap-mode define-word devdocs diminish dired-quick-sort
-                disable-mouse dotenv-mode drag-stuff dumb-jump eat edit-indirect
-                elisp-def elisp-demos elisp-slime-nav emr esh-help
-                eshell-prompt-extras eshell-z eval-sexp-fu evil-anzu evil-args
-                evil-cleverparens evil-collection evil-easymotion evil-escape
-                evil-evilified-state evil-exchange evil-goggles evil-iedit-state
-                evil-indent-plus evil-lion evil-lisp-state evil-matchit evil-mc
-                evil-nerd-commenter evil-numbers evil-org evil-surround
-                evil-textobj-line evil-tutor evil-unimpaired evil-visual-mark-mode
-                evil-visualstar expand-region eyebrowse fancy-battery flycheck
-                flycheck-elsa flycheck-package flycheck-pos-tip flyspell-correct
-                flyspell-correct-helm ggtags gh-md gntp gnuplot golden-ratio
-                google-translate helm-ag helm-c-yasnippet helm-comint helm-company
-                helm-descbinds helm-lsp helm-make helm-mode-manager helm-org
-                helm-org-rifle helm-projectile helm-purpose helm-swoop helm-themes
-                helm-xref hide-comnt highlight-indentation highlight-numbers
-                highlight-parentheses hl-todo holy-mode htmlize hungry-delete
-                hybrid-mode indent-guide info+ inspector link-hint log4e
-                lorem-ipsum lsp-docker lsp-mode lsp-origami lsp-treemacs lsp-ui
-                macrostep markdown-mode markdown-toc multi-line multi-term
-                nameless open-junk-file org-category-capture org-cliplink
-                org-contrib org-download org-mime org-pomodoro org-present
-                org-project-capture org-projectile org-rich-yank org-superstar
-                origami overseer package-lint page-break-lines paradox
-                password-generator pcre2el popwin pos-tip quickrun
-                rainbow-delimiters restart-emacs ron-mode rust-mode rustic
-                shell-pop space-doc spaceline spacemacs-purpose-popwin
-                spacemacs-whitespace-cleanup string-edit-at-point
-                string-inflection symbol-overlay symon term-cursor terminal-here
-                toc-org toml-mode treemacs-evil treemacs-icons-dired
-                treemacs-persp treemacs-projectile undo-fu undo-fu-session uuidgen
-                vi-tilde-fringe volatile-highlights vundo wgrep winum
-                writeroom-mode ws-butler xterm-color yaml yasnippet
-                yasnippet-snippets)))
+     '(monokai-theme solarized-theme zenburn-theme editorconfig erlang ob-elixir flycheck-mix flycheck-credo alchemist company elixir-mode winum uuidgen toc-org powerline org-plus-contrib org-bullets markdown-mode link-hint parent-mode projectile request gitignore-mode git-link pos-tip flycheck flx evil-visual-mark-mode evil-unimpaired magit magit-popup git-commit ghub with-editor smartparens iedit evil-ediff anzu evil goto-chg undo-tree eshell-z dumb-jump f dash diminish column-enforce-mode hydra inflections edn multiple-cursors paredit yasnippet s peg eval-sexp-fu highlight cider spinner queue pkg-info clojure-mode epl bind-map bind-key packed helm avy helm-core popup async xterm-color shell-pop multi-term eshell-prompt-extras esh-help ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe use-package spacemacs-theme spaceline smooth-scrolling smeargle restart-emacs rainbow-delimiters quelpa popwin persp-mode pcre2el paradox page-break-lines orgit open-junk-file neotree move-text mmm-mode markdown-toc magit-gitflow macrostep lorem-ipsum linum-relative leuven-theme info+ indent-guide ido-vertical-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flx helm-descbinds helm-ag google-translate golden-ratio gitconfig-mode gitattributes-mode git-timemachine git-messenger gh-md flycheck-pos-tip flx-ido fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-args evil-anzu elisp-slime-nav define-word clj-refactor clean-aindent-mode cider-eval-sexp-fu buffer-move bracketed-paste auto-highlight-symbol auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line))
+   '(warning-suppress-log-types '(((defvaralias losing-value)))))
   (custom-set-faces
    ;; custom-set-faces was added by Custom.
    ;; If you edit it by hand, you could mess it up, so be careful.
