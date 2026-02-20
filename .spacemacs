@@ -59,7 +59,9 @@ This function should only modify configuration layer settings."
      spell-checking
      syntax-checking
      ;; version-control
-     treemacs)
+     treemacs
+     (claude-code :variables claude-code-ide-window-side 'right claude-code-ide-window-width 100)
+     (scheme :variables scheme-implementations '(guile)))
 
 
    ;; List of additional packages that will be installed without being wrapped
@@ -471,9 +473,9 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-persistent-server nil
 
    ;; List of search tool executable names. Spacemacs uses the first installed
-   ;; tool of the list. Supported tools are `rg', `ag', `pt', `ack' and `grep'.
-   ;; (default '("rg" "ag" "pt" "ack" "grep"))
-   dotspacemacs-search-tools '("rg" "ag" "pt" "ack" "grep")
+   ;; tool of the list. Supported tools are `rg', `ag', `ack' and `grep'.
+   ;; (default '("rg" "ag" "ack" "grep"))
+   dotspacemacs-search-tools '("rg" "ack" "grep")
 
    ;; The backend used for undo/redo functionality. Possible values are
    ;; `undo-fu', `undo-redo' and `undo-tree' see also `evil-undo-system'.
@@ -579,7 +581,18 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
-  )
+  ;; Ensure claude-code-ide is in load-path and loaded
+  (add-to-list 'load-path "~/.emacs.d/private/local/claude-code-ide")
+  (require 'claude-code-ide)
+
+  ;; Update claude-code-ide from git
+  (defun update-claude-code-ide ()
+    "Pull latest claude-code-ide from git and reload."
+    (interactive)
+    (let ((default-directory "~/.emacs.d/private/local/claude-code-ide"))
+      (shell-command "git pull")
+      (load-file "~/.emacs.d/private/local/claude-code-ide/claude-code-ide.el")
+      (message "claude-code-ide updated and reloaded"))))
 
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -595,43 +608,7 @@ This function is called at the very end of Spacemacs initialization."
    ;; Your init file should contain only one such instance.
    ;; If there is more than one, they won't work right.
    '(package-selected-packages
-     '(ace-link aggressive-indent alert all-the-icons auto-compile
-                auto-highlight-symbol auto-yasnippet avy-jump-helm-line bui
-                centered-cursor-mode clean-aindent-mode column-enforce-mode
-                company dap-mode define-word devdocs diminish dired-quick-sort
-                disable-mouse dotenv-mode drag-stuff dumb-jump eat edit-indirect
-                elisp-def elisp-demos elisp-slime-nav emr esh-help
-                eshell-prompt-extras eshell-z eval-sexp-fu evil-anzu evil-args
-                evil-cleverparens evil-collection evil-easymotion evil-escape
-                evil-evilified-state evil-exchange evil-goggles evil-iedit-state
-                evil-indent-plus evil-lion evil-lisp-state evil-matchit evil-mc
-                evil-nerd-commenter evil-numbers evil-org evil-surround
-                evil-textobj-line evil-tutor evil-unimpaired evil-visual-mark-mode
-                evil-visualstar expand-region eyebrowse fancy-battery flycheck
-                flycheck-elsa flycheck-package flycheck-pos-tip flyspell-correct
-                flyspell-correct-helm ggtags gh-md gntp gnuplot golden-ratio
-                google-translate helm-ag helm-c-yasnippet helm-comint helm-company
-                helm-descbinds helm-lsp helm-make helm-mode-manager helm-org
-                helm-org-rifle helm-projectile helm-purpose helm-swoop helm-themes
-                helm-xref hide-comnt highlight-indentation highlight-numbers
-                highlight-parentheses hl-todo holy-mode htmlize hungry-delete
-                hybrid-mode indent-guide info+ inspector link-hint log4e
-                lorem-ipsum lsp-docker lsp-mode lsp-origami lsp-treemacs lsp-ui
-                macrostep markdown-mode markdown-toc multi-line multi-term
-                nameless open-junk-file org-category-capture org-cliplink
-                org-contrib org-download org-mime org-pomodoro org-present
-                org-project-capture org-projectile org-rich-yank org-superstar
-                origami overseer package-lint page-break-lines paradox
-                password-generator pcre2el popwin pos-tip quickrun
-                rainbow-delimiters restart-emacs ron-mode rust-mode rustic
-                shell-pop space-doc spaceline spacemacs-purpose-popwin
-                spacemacs-whitespace-cleanup string-edit-at-point
-                string-inflection symbol-overlay symon term-cursor terminal-here
-                toc-org toml-mode treemacs-evil treemacs-icons-dired
-                treemacs-persp treemacs-projectile undo-fu undo-fu-session uuidgen
-                vi-tilde-fringe volatile-highlights vundo wgrep winum
-                writeroom-mode ws-butler xterm-color yaml yasnippet
-                yasnippet-snippets)))
+     '(quelpa-use-package ace-link aggressive-indent alert all-the-icons auto-compile auto-highlight-symbol auto-yasnippet avy-jump-helm-line bui centered-cursor-mode clean-aindent-mode column-enforce-mode company dap-mode define-word devdocs diminish dired-quick-sort disable-mouse dotenv-mode drag-stuff dumb-jump eat edit-indirect elisp-def elisp-demos elisp-slime-nav emr esh-help eshell-prompt-extras eshell-z eval-sexp-fu evil-anzu evil-args evil-cleverparens evil-collection evil-easymotion evil-escape evil-evilified-state evil-exchange evil-goggles evil-iedit-state evil-indent-plus evil-lion evil-lisp-state evil-matchit evil-mc evil-nerd-commenter evil-numbers evil-org evil-surround evil-textobj-line evil-tutor evil-unimpaired evil-visual-mark-mode evil-visualstar expand-region eyebrowse fancy-battery flycheck flycheck-elsa flycheck-package flycheck-pos-tip flyspell-correct flyspell-correct-helm ggtags gh-md gntp gnuplot golden-ratio google-translate helm-ag helm-c-yasnippet helm-comint helm-company helm-descbinds helm-lsp helm-make helm-mode-manager helm-org helm-org-rifle helm-projectile helm-purpose helm-swoop helm-themes helm-xref hide-comnt highlight-indentation highlight-numbers highlight-parentheses hl-todo holy-mode htmlize hungry-delete hybrid-mode indent-guide info+ inspector link-hint log4e lorem-ipsum lsp-docker lsp-mode lsp-origami lsp-treemacs lsp-ui macrostep markdown-mode markdown-toc multi-line multi-term nameless open-junk-file org-category-capture org-cliplink org-contrib org-download org-mime org-pomodoro org-present org-project-capture org-projectile org-rich-yank org-superstar origami overseer package-lint page-break-lines paradox password-generator pcre2el popwin pos-tip quickrun rainbow-delimiters restart-emacs ron-mode rust-mode rustic shell-pop space-doc spaceline spacemacs-purpose-popwin spacemacs-whitespace-cleanup string-edit-at-point string-inflection symbol-overlay symon term-cursor terminal-here toc-org toml-mode treemacs-evil treemacs-icons-dired treemacs-persp treemacs-projectile undo-fu undo-fu-session uuidgen vi-tilde-fringe volatile-highlights vundo wgrep winum writeroom-mode ws-butler xterm-color yaml yasnippet yasnippet-snippets)))
   (custom-set-faces
    ;; custom-set-faces was added by Custom.
    ;; If you edit it by hand, you could mess it up, so be careful.
